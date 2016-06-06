@@ -1,0 +1,14 @@
+{% load staticfiles %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'polls/style.css' %}" />
+
+{% if bikes %}
+    Something smart actually happened.<br/>
+    <select>
+    {% for bike in bikes %}
+        <option value={{bike.id}}><li>{{bike.id}} {{bike.station}}</li></option>
+    {% endfor %}
+    </select>
+{% else %}
+    <p>No polls are available.</p>
+{% endif %}
