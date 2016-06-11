@@ -5,6 +5,8 @@ from django.core.urlresolvers import reverse
 from django.views import generic
 from django.utils import timezone
 
+from django.db.models import F
+
 from .models import Choice, Question
 
 class IndexView(generic.ListView):
@@ -39,30 +41,23 @@ class ResultsView(generic.DetailView):
 #     question = get_object_or_404(Question, pk=question_id)
 #     return render(request, 'polls/results.html', {'question': question})
 
+from time import sleep
+
 def vote(request, question_id):
+    print Question, dir(Question), '\n\n\n\n'
     question = get_object_or_404(Question, pk=question_id)
     print request.POST.getlist('choice[]')
+
     try:
-        selected_choice = question.choice_set.filter(pk__in=request.POST.getlist('choice[]'))
-        if not len(selected_choice):
+        if not len(request.POST.getlist('choice[]')):
             return render(request, 'polls/detail.html', {
                 'question': question,
                 'error_message': "You didn't select a choice.",
             })
-        print question.choice_set
-        print selected_choice
-    except (KeyError, Choice.DoesNotExist):
-        # Redisplay the question voting form.
-        return render(request, 'polls/detail.html', {
-            'question': question,
-            'error_message': "You didn't select a choice.",
-        })
-    else:
-        for i in selected_choice:
-            i.votes += 1
-            i.save()
-        # selected_choice.save()
-        # Always return an HttpResponseRedirect after successfully dealing
-        # with POST data. This prevents data from being posted twice if a
-        # user hits the Back button.
-        return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
+        else:
+            print question.choice_set.filter(pk__in=request.POST.getlist('choice[]'))
+            question.choice_set.filter(pk__in=request.POST.getlist('choice[]')).update(votes=F('votes')+1)
+            # sleep(3)
+            return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
+    except:
+        pass

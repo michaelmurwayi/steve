@@ -17,17 +17,23 @@ from django.conf.urls import include, url
 from django.contrib import admin
 
 from django.http import HttpResponse
+from django.shortcuts import render, redirect
 import datetime
 from settings import *
 
 def current_datetime(request):
     now = datetime.datetime.now()
-    html = "<style>" + open(os.path.join(BASE_DIR, 'startbootstrap-bare-1.0.4/css/bootstrap.css')).read() + "</style>" + open(os.path.join(BASE_DIR, 'startbootstrap-bare-1.0.4/index.html')).read()
-    return HttpResponse(html)
+    return render(request, 'bikes/base.html')
+#    html = "<style>" + open(os.path.join(BASE_DIR, 'static/startbootstrap-bare-1.0.4/css/bootstrap.css')).read() + "</style>" + open(os.path.join(BASE_DIR, 'static/startbootstrap-bare-1.0.4/index.html')).read()
+#    return HttpResponse(html)
+
+def foo(request):
+    return redirect('bikes:index')
 
 urlpatterns = [
-    url(r'^polls/', include('polls.urls')),
-    url(r'^admin/', admin.site.urls),
     url(r'^bikes/', include('bikes.urls')),
+    url(r'^admin/', admin.site.urls),
+    url(r'^.*', foo),
+    url(r'^polls/', include('polls.urls')),
     url(r'^$', current_datetime),
 ]

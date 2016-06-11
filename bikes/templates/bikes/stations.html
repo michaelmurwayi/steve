@@ -1,0 +1,19 @@
+{% extends 'bikes/base.html' %}
+{% load staticfiles %}
+{% block content %}
+  {% if stations %}
+      Stations:<br/>
+      <form action="." method="post" name="station_select">
+        {% csrf_token %}
+        <select class="form-control" name="s_id">
+          {% for station in stations %}
+              <option value={{station.id}}><li>{{station.address}}</li></option>
+          {% endfor %}]
+        </select>
+        <input class="btn btn-default" type="submit" name="station_select" value="Show bikes"/>
+      </form>
+
+  {% else %}
+      <p>No polls are available.</p>
+  {% endif %}
+{% endblock %}

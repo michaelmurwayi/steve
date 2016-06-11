@@ -2,14 +2,10 @@ from django.conf.urls import url
 
 from . import views
 
-app_name = 'polls'
+app_name = 'bikes'
+
 urlpatterns = [
-    # ex: /polls/
     url(r'^$', views.index, name='index'),
-    # ex: /polls/5/
-    # url(r'^specifics/(?P<pk>[0-9]+)/$', views.DetailView.as_view(), name='detail'),
-    # ex: /polls/5/results/
-    # url(r'^(?P<pk>[0-9]+)/results/$', views.ResultsView.as_view(), name='results'),
-    # ex: /polls/5/vote/
-    # url(r'^(?P<question_id>[0-9]+)/vote/$', views.vote, name='vote'),
+    url(r'^station/(?P<station_id>[0-9]+)/$', views.station_detail, name='station_detail'),
+    url(r'^stations/$', views.stations, name='stations'),
 ]

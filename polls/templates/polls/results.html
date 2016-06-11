@@ -1,13 +1,13 @@
 {% load staticfiles %}
 
-<link rel="stylesheet" type="text/css" href="{% static 'polls/style.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.6-dist/css/bootstrap.css' %}" />
 
 <h1>{{ question.question_text }}</h1>
 
 <ul>
-{% for choice in question.choice_set.all %}
-    <li>{{ choice.choice_text }} -- {{ choice.votes }} vote{{ choice.votes|pluralize }}</li>
-{% endfor %}
+  {% for choice in question.choice_set.all %}
+      <li>{{ choice.choice_text }} -- {{ choice.votes }} vote{{ choice.votes|pluralize }}</li>
+  {% endfor %}
 </ul>
 
 <a href="{% url 'polls:detail' question.id %}">Vote again?</a>

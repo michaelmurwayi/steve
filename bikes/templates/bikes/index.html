@@ -1,14 +1,30 @@
+{% extends 'bikes/base.html' %}
 {% load staticfiles %}
-
-<link rel="stylesheet" type="text/css" href="{% static 'polls/style.css' %}" />
-
-{% if bikes %}
-    Something smart actually happened.<br/>
-    <select>
-    {% for bike in bikes %}
-        <option value={{bike.id}}><li>{{bike.id}} {{bike.station}}</li></option>
-    {% endfor %}
-    </select>
-{% else %}
-    <p>No polls are available.</p>
-{% endif %}
+{% block content %}
+It is {% now "jS F Y H:i:s T" %}
+  {% if rentals %}
+    <table class="table">
+      <tr>
+        <th>Bike number</th>
+        <th>Start station</th>
+        <th>Rental start</th>
+        <th></th>
+      </tr>
+      {% for rental in rentals %}
+        <tr>
+          <td>{{ rental.bike.id }}</td>
+          <td>{{ rental.start_station.address }}</td>
+          <td>{{ rental.start_date }}</td>
+          <td>
+            <form action="." method="post">
+              {% csrf_token %}
+              <button class="btn btn-default" type="submit" name="bike_return" value="{{ rental.id }}">Return bike</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  {% else %}
+    <p>No bikes already rented.</p>
+  {% endif %}
+{% endblock %}

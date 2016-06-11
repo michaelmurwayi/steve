@@ -1,0 +1,14 @@
+{% extends 'bikes/base.html' %}
+{% load staticfiles %}
+{% block content %}
+      Bikes on station {{ station.address }}:<br/>
+      <form action="." method="post">
+        {% csrf_token %}
+        <select class="form-control" name="b_id">
+          {% for bike in bikes %}
+              <option value={{bike.id}}><li>{{bike.id}}</li></option>
+          {% endfor %}]
+        </select>
+        <input class="btn btn-default" type="submit" name="rent_bike" value="Rent"/>
+      </form>
+{% endblock %}

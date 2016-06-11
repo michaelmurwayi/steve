@@ -52,7 +52,7 @@ class rental(models.Model):
     start_date = models.DateTimeField(auto_now_add=True)
     end_date = models.DateTimeField(null=True, default=None)
     start_station = models.ForeignKey(station, related_name = "start_station", on_delete=models.CASCADE)
-    end_station = models.ForeignKey(station, related_name = "end_station", on_delete=models.CASCADE)
+    end_station = models.ForeignKey(station, null=True, related_name = "end_station", on_delete=models.CASCADE)
     def clean(self):
         if start_date >= end_date:
             raise ValidationError('rental ended before start')

@@ -1,6 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
-from django.template import Template, Context
+from django.core.urlresolvers import reverse
+from datetime import datetime
+# from django.template import Template, Context
+
+from django.db import transaction
 
 from .models import *
 
@@ -18,15 +22,69 @@ def html_escape(text):
 
 # Create your views here.
 
-def index(request):
-    s = bike.objects.filter(station=1)
-    print s
-    return render(request, 'bikes/index.html', context = {'bikes':s})
+def index(request, kwargs={}):
+    if request.method == "POST":
+        print request.POST
+    user_id = 1
+    kwargs['rentals'] = user.objects.get(pk=1).rental_set.all()
+    print kwargs
+    return render(request, 'bikes/index.html', context=kwargs)
 
-# class IndexView(generic.ListView):
-#     template_name = 'polls/index.html'
-#     context_object_name = 'latest_question_list'
-#
-#     def get_queryset(self):
-#         """Return the last five published questions."""
-#         return Question.objects.filter(pub_date__lte = timezone.now()).order_by('-pub_date')[:5]
+def rent_bike(station_id, bike_id, user_id):
+    try:
+        with transaction.atomic():
+            user_id = 1
+            rbike = bike.objects.select_for_update().get(pk=bike_id)
+            if rbike.rental is not None:
+                return 'somebody already rented that bike, try with some other'
+            rstation = station.objects.select_for_update().get(pk=station_id)
+            ruser = user.objects.select_for_update().get(pk=user_id)
+            if len(ruser.rental_set.all()) >= 3:
+                return 'you already rented 3 bikes'
+            r = rental(user = ruser, bike = rbike, start_date = datetime.now(), start_station = rstation)
+            r.save()
+            rbike.rental = r
+            rbike.save()
+        return 'bike rented successfully'
+    except:
+        return 'something went wrong, try again'
+
+@transaction.atomic
+def return_bike(rental_id, station_id):
+    try:
+        with transaction.atomic():
+            rental.objects.select_for_update()
+            crental = rental.objects.get(pk=rental_id)
+            estation = station.objects.get(pk=station_id)
+            print '\n\ncharge user for the rental\n\n'
+
+            ##############################
+            # charge user for the rental #
+            ##############################
+
+            crental.bike.station = estation
+            crental.end_station = estation
+            crental.end_date = datetime.now()
+            crental.save()
+            crental.bike.save()
+        return 'bike returned successfully'
+    except:
+        return 'something went wrong, try again'
+
+def station_detail(request, station_id):
+    if request.method == 'POST':
+        s = get_object_or_404(bike, pk=request.POST['b_id'])
+        print 'successfully locked'
+        print s, request.POST['b_id']
+        print rent_bike(station_id, request.POST['b_id'], None)
+        return redirect('bikes:index')
+    print request
+    s = get_object_or_404(station, pk=station_id)
+    return render(request, 'bikes/station_detail.html', context = {'station':s, 'bikes':s.bike_set.all().filter(rental__isnull=True).filter(working=True)})
+
+def stations(request):
+    if request.method == 'POST':
+        # print reverse('bikes:station_detail', kwargs={'station_id':request.POST['s_id']})
+        return redirect('bikes:station_detail', station_id=request.POST['s_id'])
+    s = station.objects.all()
+    return render(request, 'bikes/stations.html', context = {'stations':s})
