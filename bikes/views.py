@@ -26,7 +26,7 @@ def index(request, kwargs={}):
     if request.method == "POST":
         print request.POST
     user_id = 1
-    kwargs['rentals'] = user.objects.get(pk=1).rental_set.all()
+    kwargs['rentals'] = user.objects.get(pk=1).rental_set.all().filter(end_station__isnull=True)
     print kwargs
     return render(request, 'bikes/index.html', context=kwargs)
 
@@ -49,9 +49,8 @@ def rent_bike(station_id, bike_id, user_id):
     except:
         return 'something went wrong, try again'
 
-@transaction.atomic
 def return_bike(rental_id, station_id):
-    try:
+    # try:
         with transaction.atomic():
             rental.objects.select_for_update()
             crental = rental.objects.get(pk=rental_id)
@@ -63,13 +62,14 @@ def return_bike(rental_id, station_id):
             ##############################
 
             crental.bike.station = estation
+            crental.bike.rental_id = None
             crental.end_station = estation
             crental.end_date = datetime.now()
             crental.save()
             crental.bike.save()
         return 'bike returned successfully'
-    except:
-        return 'something went wrong, try again'
+    # except:
+    #     return 'something went wrong, try again'
 
 def station_detail(request, station_id):
     if request.method == 'POST':
@@ -82,9 +82,24 @@ def station_detail(request, station_id):
     s = get_object_or_404(station, pk=station_id)
     return render(request, 'bikes/station_detail.html', context = {'station':s, 'bikes':s.bike_set.all().filter(rental__isnull=True).filter(working=True)})
 
+# def stations_return(request, bike_id):
+
 def stations(request):
     if request.method == 'POST':
+        print request.POST
+        print
+        if 'return_station' in request.POST:
+            print '\n\nreturn bike\n'
+            print return_bike(request.POST['rental_id'], request.POST['station_id'])
+            return redirect('bikes:index')
+        if 'station_select' in request.POST:
+            return redirect('bikes:station_detail', station_id=request.POST['station_id'])
+        if 'bike_return' in request.POST:
+            s = {'stations':station.objects.all()}
+            s.update(request.POST)
+            print s['rental_id']
+            s['rental_id'] = int(s['rental_id'][0])
+            return render(request, 'bikes/stations.html', context = s)
+            pass
         # print reverse('bikes:station_detail', kwargs={'station_id':request.POST['s_id']})
-        return redirect('bikes:station_detail', station_id=request.POST['s_id'])
-    s = station.objects.all()
-    return render(request, 'bikes/stations.html', context = {'stations':s})
+    return render(request, 'bikes/stations.html', context = {'stations':station.objects.all()})

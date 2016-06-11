@@ -5,12 +5,17 @@
       Stations:<br/>
       <form action="." method="post" name="station_select">
         {% csrf_token %}
-        <select class="form-control" name="s_id">
+        <select class="form-control" name="station_id">
           {% for station in stations %}
               <option value={{station.id}}><li>{{station.address}}</li></option>
           {% endfor %}]
         </select>
-        <input class="btn btn-default" type="submit" name="station_select" value="Show bikes"/>
+        {% if bike_return %}
+          <input type="hidden" value="{{ rental_id }}" name="rental_id"/>
+          <input class="btn btn-default" type="submit" name="return_station" value="Return"/>
+        {% else %}
+          <input class="btn btn-default" type="submit" name="station_select" value="Show bikes"/>
+        {% endif %}
       </form>
 
   {% else %}
