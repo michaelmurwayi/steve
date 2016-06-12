@@ -1,24 +1,36 @@
 {% extends 'bikes/base.html' %}
 {% load staticfiles %}
 {% block content %}
-  {% if stations %}
-      Stations:<br/>
-      <form action="." method="post" name="station_select">
-        {% csrf_token %}
-        <select class="form-control" name="station_id">
-          {% for station in stations %}
-              <option value={{station.id}}><li>{{station.address}}</li></option>
-          {% endfor %}]
-        </select>
-        {% if bike_return %}
-          <input type="hidden" value="{{ rental_id }}" name="rental_id"/>
-          <input class="btn btn-default" type="submit" name="return_station" value="Return"/>
-        {% else %}
-          <input class="btn btn-default" type="submit" name="station_select" value="Show bikes"/>
-        {% endif %}
-      </form>
-
+<div class="row">
+  <div class="col-lg-12 text-center">
+    <h1>Stations</h1>
+    <p class="lead">Choose a station</p>
+  </div>
+</div>
+{% if stations %}
+<form action="." method="post" name="station_select">
+  {% csrf_token %}
+  <div class="form-group">
+    <select class="form-control" name="station_id">
+      {% for station in stations %}
+      <option value={{station.id}}><li>{{station.address}}</li></option>
+      {% endfor %}
+    </select>
+  </div>
+  {% if bike_return %}
+  <input type="hidden" value="{{ rental_id }}" name="rental_id"/>
+  <input class="btn btn-default" type="submit" name="return_station" value="Return"/>
   {% else %}
-      <p>No polls are available.</p>
+  <input class="btn btn-default" type="submit" name="station_select" value="Show bikes"/>
   {% endif %}
+</form>
+
+{% else %}
+<div class="row">
+  <div class="col-lg-12 text-center">
+    <h1>Stations</h1>
+    <p class="lead">Unfortunately there are no stations working at the moment</p>
+  </div>
+</div>
+{% endif %}
 {% endblock %}

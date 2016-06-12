@@ -11,5 +11,6 @@ urlpatterns = [
     url(r'^stations/$', views.stations, name='stations'),
     url(r'^login$', views.login_page, name='login'),
     url(r'^logout$', views.logout_page, name='logout'),
-    url(r'^register$', views.register, name='register')
+    url(r'^register$', views.register, name='register'),
+    url(r'^topup$', views.top_up, name="top_up")
 ]

@@ -2,7 +2,6 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, logout
-# from django.template import Template, Context
 from datetime import datetime, timedelta
 
 from django.db import transaction
@@ -23,8 +22,6 @@ html_escape_table = {
 def html_escape(text):
     """Produce entities within text."""
     return "".join(html_escape_table.get(c,c) for c in text)
-
-# Create your views here.
 
 def index(request, *args, **kwargs):
     print kwargs
@@ -74,7 +71,7 @@ def rental_charge(duration):
             _first_hour)
 
 def return_bike(rental_id, station_id):
-    # try:
+    try:
         with transaction.atomic():
             Rental.objects.select_for_update()
             Bike.objects.select_for_update()
@@ -91,8 +88,8 @@ def return_bike(rental_id, station_id):
             rental.save()
             rental.bike.save()
         return ("success", "bike returned successfully")
-    # except:
-    #     return ("error", "something went wrong, try again")
+    except:
+        return ("error", "something went wrong, try again")
 
 def station_detail(request, station_id):
     if request.method == 'POST':
@@ -123,7 +120,9 @@ def stations(request):
     return render(request, 'bikes/stations.html', context = {'stations':Station.objects.all()})
 
 def details(request):
-    return render(request, 'bikes/base.html')
+    if not request.user.is_authenticated():
+        redirect('bikes:index')
+    return render(request, 'bikes/details.html')
 
 
 def logout_page(request):
@@ -133,7 +132,6 @@ def logout_page(request):
 
 def login_page(request):
     print BikeUser.objects.all()
-    # form = BikeLoginForm()
     if request.method == 'POST':
         if 'login_request' in request.POST:
             user = authenticate(username='bikes_'+request.POST['login'], password=request.POST['password'])
@@ -142,10 +140,6 @@ def login_page(request):
                 if user.is_active:
                     login(request, user)
                     return index(request)
-        # form = BikeLoginForm(request.POST)
-        # print '\n\n\n\nprocessed form'
-        # if form.is_valid():
-        #     print form.fields
     return render(request, 'bikes/login.html')
 
 def register(request):
@@ -170,3 +164,11 @@ def register(request):
             except:
                 return redirect('bikes:register')
     return render(request, 'bikes/register.html')
+
+def top_up(request):
+    if request.method == 'POST':
+        with transaction.atomic():
+            BikeUser.objects.select_for_update()
+            request.user.user.balance += int(request.POST['amount'])
+            request.user.user.save()
+    return render(request, 'bikes/top_up.html')

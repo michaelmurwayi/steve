@@ -1,0 +1,23 @@
+{% extends 'bikes/base.html' %}
+{% load staticfiles %}
+{% block content %}
+
+{% if alerts %}
+{% for alert in alerts %}
+{% if alert.0 == 'error' %}
+<div class="alert alert-danger" role="alert">{{ alert.1 }}</div>
+{% endif %}
+{% if alert.0 == 'success' %}
+<div class="alert alert-success" role="alert">{{ alert.1 }}</div>
+{% endif %}
+{% endfor %}
+{% endif %}
+<form action="{% url 'bikes:top_up' %}" method="post">
+  {% csrf_token %}
+  <div class="form-group">
+    <label for="amount">Amount</label>
+    <input type="number" name='amount' class="form-control" id="login" placeholder="">
+  </div>
+  <button type="submit" name="login_request" class="btn btn-default">Top-up</button>
+</form>
+{% endblock %}
