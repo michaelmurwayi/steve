@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User# as authUser#, AbstractBaseUser
 from django.core.exceptions import ValidationError
 
 # Create your models here.
@@ -11,10 +11,14 @@ class user(models.Model):
     address = models.CharField(max_length=30)
     login = models.CharField(unique=True, max_length=200)
     balance = models.IntegerField(default=0)
+    in_debt = models.BooleanField(default=False)
     name = models.CharField(max_length=30, blank=False)
     surname = models.CharField(max_length=30, blank=False)
     email = models.EmailField()
     reg_date = models.DateTimeField(auto_now_add=True)
+    def save(self, *args, **kwargs):
+        self.in_debt = (self.balance < 0)
+        super(user, self).save(*args, **kwargs)
     def __str__(self):
         return self.login
 
@@ -34,15 +38,6 @@ class bike(models.Model):
             self.station = None
         if self.station:
             self.rental = None
-        # if self.rented and self.station != None:
-        #     raise ValidationError('bike rented and present at the station')
-        # if not self.rented and self.station == None:
-        #     raise ValidationError('bike not rented and no station assigned')
-        # if self.station != None:
-        #     print self.station.capacity
-        #     print len(self.station.bike_set.all())
-        #     if self.station.capacity <= len(self.station.bike_set.all()):
-        #         raise ValidationError('station is already full, sorry')
     def __str__(self):
         return str(self.id)
 

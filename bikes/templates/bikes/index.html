@@ -1,31 +1,46 @@
 {% extends 'bikes/base.html' %}
 {% load staticfiles %}
 {% block content %}
-It is {% now "jS F Y H:i:s T" %}
-  {% if rentals %}
-    <table class="table">
-      <tr>
-        <th>Bike number</th>
-        <th>Start station</th>
-        <th>Rental start</th>
-        <th></th>
-      </tr>
-      {% for rental in rentals %}
-        <tr>
-          <td>{{ rental.bike.id }}</td>
-          <td>{{ rental.start_station.address }}</td>
-          <td>{{ rental.start_date }}</td>
-          <td>
-            <form action="{% url 'bikes:stations' %}" method="post">
-              {% csrf_token %}
-              <input type="hidden" name='rental_id' value="{{ rental.id }}"></input>
-              <button class="btn btn-default" type="submit" name="bike_return">Return bike</button>
-            </form>
-          </td>
-        </tr>
-      {% endfor %}
-    </table>
-  {% else %}
-    <p>No bikes rented at the moment.</p>
+
+  {% if alerts %}
+    {% for error in alerts %}
+      {% if error.0 == 'error' %}
+        <div class="alert alert-danger" role="alert">{{ error.1 }}</div>
+      {% endif %}
+      {% if error.0 == 'success' %}
+        <div class="alert alert-success" role="alert">{{ error.1 }}</div>
+      {% endif %}
+    {% endfor %}
   {% endif %}
+  {% if request.user.is_authenticated %}
+    {% if rentals %}
+      <table class="table">
+        <tr>
+          <th>Bike number</th>
+          <th>Start station</th>
+          <th>Rental start</th>
+          <th></th>
+        </tr>
+        {% for rental in rentals %}
+          <tr>
+            <td>{{ rental.bike.id }}</td>
+            <td>{{ rental.start_station.address }}</td>
+            <td>{{ rental.start_date }}</td>
+            <td>
+              <form action="{% url 'bikes:stations' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name='rental_id' value="{{ rental.id }}"></input>
+                <button class="btn btn-default" type="submit" name="bike_return">Return bike</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </table>
+    {% else %}
+      <p>No bikes rented at the moment.</p>
+    {% endif %}
+  {% else %}
+    <p> User not logged in. </p>
+  {% endif %}
+
 {% endblock %}
