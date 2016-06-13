@@ -4,7 +4,11 @@
 <div class="row">
   <div class="col-lg-12 text-center">
     <h1>Stations</h1>
-    <p class="lead">Choose a station</p>
+    {% if 'bike_return' in request.POST %}
+      <p class="lead">Choose a return station</p>
+    {% else %}
+      <p class="lead">Choose a station</p>
+    {% endif %}
   </div>
 </div>
 {% if stations %}

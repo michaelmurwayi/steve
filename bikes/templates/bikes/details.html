@@ -9,20 +9,83 @@
     <p>Current balance: {{ user.user.balance }}</p>
   </div>
 </div>
-<form action="{% url 'bikes:details' %}" method="post">
-  {% csrf_token %}
-  <div class="form-group">
-    <label for="login">Name</label>
-    <input type="text" name='name' class="form-control" id="name" placeholder="{{ user.user.name }}">
-  </div>
-  <div class="form-group">
-    <label for="login">Surname</label>
-    <input type="text" name='surname' class="form-control" id="surname" placeholder="{{ user.user.surname }}">
-  </div>
-  <div class="form-group">
-    <label for="login">Address</label>
-    <input type="text" name='address' class="form-control" id="surname" placeholder="{{ user.user.address }}">
-  </div>
-  <button type="submit" name="login_request" class="btn btn-default">Save</button>
-</form>
+<div class="col-lg-4">
+  <br>
+  <p class="lead">Update information</p>
+  <form action="{% url 'bikes:details' %}" method="post">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="login">Name</label>
+      <input type="text" name='name' class="form-control" id="name" placeholder="{{ user.user.name }}">
+    </div>
+    <div class="form-group">
+      <label for="login">Surname</label>
+      <input type="text" name='surname' class="form-control" id="surname" placeholder="{{ user.user.surname }}">
+    </div>
+    <div class="form-group">
+      <label for="login">Address</label>
+      <input type="text" name='address' class="form-control" id="surname" placeholder="{{ user.user.address }}">
+    </div>
+    <button type="submit" name="account_details_save" class="btn btn-default">Save</button>
+  </form>
+  <br>
+  <p class="lead">Change password</p>
+  <form action="{% url 'bikes:details' %}" method="post">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="old_password">Old password</label>
+      <input type="text" name='old_password' class="form-control" id="old_password" placeholder="Old password">
+    </div>
+    <div class="form-group">
+      <label for="new_password">New password</label>
+      <input type="text" name='new_password' class="form-control" id="new_password" placeholder="New password">
+    </div>
+    <div class="form-group">
+      <label for="new_password2">Repeat new password</label>
+      <input type="text" name='new_password2' class="form-control" id="new_password2" placeholder="New password">
+    </div>
+    <button type="submit" name="change_password" class="btn btn-default">Change</button>
+  </form>
+</div>
+<div class="col-lg-8">
+  {% if rentals %}
+  <table class="table">
+    {% for rental in rentals %}
+    {% if rental.cost %}
+    <tr>
+    {% else %}
+    <tr class="success">
+    {% endif %}
+      <td>{{ rental.bike.id }}</td>
+      <td>{{ rental.start_date }}</td>
+      <td>{{ rental.start_station.address }}</td>
+      {% if rental.cost %}
+      <td>{{ rental.cost }}</td>
+      {% else %}
+      <td></td>
+      {% endif %}
+      <td>
+        <form action="{% url 'bikes:rental_detail' rental.id %}" method="post">
+          {% csrf_token %}
+          <input type="hidden" name='rental_id' value="{{ rental.id }}"></input>
+          <button class="btn btn-default" type="submit" name="bike_return">Show details</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% if show_all_rentals in request.POST %}
+  {% else %}
+  <form method='post'>
+    <div class="form-group">
+      {% csrf_token %}
+      <button type="submit" name="show_all_rentals" class="btn btn-default center-block">Show all</button>
+    </div>
+  {% endif %}
+  </form>
+  {% else %}
+  <br>
+  <p class="lead text-center">No past rentals.</p>
+  {% endif %}
+</div>
 {% endblock %}

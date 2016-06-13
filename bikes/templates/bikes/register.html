@@ -1,23 +1,19 @@
 {% extends 'bikes/base.html' %}
 {% load staticfiles %}
 {% block content %}
-
-{% if alerts %}
-{% for alert in alerts %}
-{% if alert.0 == 'error' %}
-<div class="alert alert-danger" role="alert">{{ alert.1 }}</div>
-{% endif %}
-{% if alert.0 == 'success' %}
-<div class="alert alert-success" role="alert">{{ alert.1 }}</div>
-{% endif %}
-{% endfor %}
-{% endif %}
 <form action="{% url 'bikes:register' %}" method="post">
   {% csrf_token %}
+  {% if name %}
+  <div class="form-group">
+    <label for="login">Name</label>
+    <input type="text" name='name' class="form-control" id="name" placeholder="{{ name }}">
+  </div>
+  {% else %}
   <div class="form-group">
     <label for="login">Name</label>
     <input type="text" name='name' class="form-control" id="name" placeholder="Name">
   </div>
+  {% endif %}
   <div class="form-group">
     <label for="login">Surname</label>
     <input type="text" name='surname' class="form-control" id="surname" placeholder="Surname">

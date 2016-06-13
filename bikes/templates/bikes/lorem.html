@@ -1,0 +1,26 @@
+{% extends 'bikes/base.html' %}
+{% block content %}
+<div class="text-justify">
+  {% if 'terms' in request.get_raw_uri %}
+  <div class="text-center"><h1>Terms of use</h1></div>
+  {% endif %}
+  {% if 'faq' in request.get_raw_uri %}
+  <div class="text-center"><h1>F.A.Q.</h1></div>
+  {% endif %}
+  <div class="row">
+    <p class="lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean suscipit metus eget venenatis aliquet. Pellentesque imperdiet ante id elit placerat vehicula. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam consectetur enim ipsum, sit amet imperdiet erat dictum sed. Etiam pharetra eros at erat venenatis placerat. Sed feugiat erat tellus, ut bibendum elit condimentum nec. Integer eu nunc hendrerit, suscipit urna ac, scelerisque urna. Duis feugiat lectus id ultricies efficitur.</p>
+  </div>
+  <div class="row">
+    <p class="lead">Cras posuere dolor nisl, id congue eros convallis eu. Aenean eu fermentum elit, vel consectetur dui. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Integer efficitur non lacus eget semper. Cras massa dolor, pulvinar eget tristique vel, molestie ut massa. Vivamus eu rutrum leo, a iaculis erat. Donec augue orci, molestie quis facilisis vitae, aliquam ac odio. Nunc bibendum, velit cursus cursus finibus, ante odio accumsan nunc, vitae dictum arcu quam eget enim. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Fusce ac odio id velit faucibus pellentesque. Integer fermentum tortor quis sem hendrerit, quis laoreet arcu bibendum. Integer dictum orci sit amet condimentum viverra.</p>
+  </div>
+  <div class="row">
+    <p class="lead">Quisque pretium bibendum enim, ut volutpat elit tristique non. Suspendisse massa lectus, condimentum sit amet nibh in, hendrerit luctus purus. Integer id nulla ut tortor ultricies malesuada. Aenean sapien justo, ornare id tortor a, condimentum euismod purus. In placerat eleifend velit, in condimentum velit sagittis nec. Quisque eu facilisis massa. Vivamus dictum augue commodo suscipit volutpat. Cras maximus mollis eros in eleifend.</p>
+  </div>
+  <div class="row">
+    <p class="lead">Etiam consequat sodales consectetur. Nam et efficitur velit. Proin quis mauris vel dolor finibus malesuada et eget justo. Nam quis lorem nisi. Maecenas id ipsum posuere, egestas dui ac, aliquet elit. Mauris vitae hendrerit leo. Aenean ut tortor id arcu porta viverra sit amet in velit.</p>
+  </div>
+  <div class="row">
+    <p class="lead">Sed volutpat, ante eget rhoncus suscipit, ex mauris tincidunt neque, ut vulputate justo sem at arcu. Donec vitae magna eu tellus finibus dictum. Nullam quis ante eget eros rhoncus commodo id id orci. Curabitur ante turpis, interdum vitae eros ultrices, condimentum aliquet elit. Donec libero tellus, pretium et augue sit amet, euismod lobortis tortor. Donec purus ipsum, viverra in pellentesque et, porttitor sed nisl. Praesent ultrices lorem leo, sit amet luctus risus laoreet ut. Suspendisse commodo lacus elementum leo tempus volutpat.</p>
+  </div>
+</div>
+{% endblock %}

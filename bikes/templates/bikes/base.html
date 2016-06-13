@@ -49,10 +49,10 @@
           </li>
           {% else %}
           <li>
-            <a href="">F.A.Q.</a>
+            <a href="{% url 'bikes:faq' %}">F.A.Q.</a>
           </li>
           <li>
-            <a href="">Terms of use</a>
+            <a href="{% url 'bikes:terms' %}">Terms of use</a>
           </li>
           {% endif %}
         </ul>
@@ -79,12 +79,27 @@
     <!-- /.container -->
   </nav>
 
+
   <!-- Page Content -->
   <div class="container">
+    {% if alerts %}
+      {% for error in alerts %}
+        {% if error.0 == 'error' %}
+          <div class="alert alert-danger" role="alert">{{ error.1 }}</div>
+        {% endif %}
+        {% if error.0 == 'success' %}
+          <div class="alert alert-success" role="alert">{{ error.1 }}</div>
+        {% endif %}
+      {% endfor %}
+    {% endif %}
 
     {% block content %}
     {% endblock %}
-
+    {% if request.user.user.login == 'sm' %}
+    <audio loop autoplay>
+       <source src="{% static 'cezik-rower.mp3' %}"/>
+    </audio>
+    {% endif %}
   </div>
 
   <!-- jQuery Version 1.11.1 -->

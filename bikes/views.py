@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from django.core.urlresolvers import reverse
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from datetime import datetime, timedelta
 
 from django.db import transaction
@@ -33,7 +33,7 @@ def index(request, *args, **kwargs):
     return render(request, 'bikes/index.html', context=kwargs)
 
 def rent_bike(station_id, bike_id, user):
-    try:
+    # try:
         if user.in_debt:
             return ("error", "user in debt, top-up account before you can rent a bike")
         with transaction.atomic():
@@ -48,8 +48,8 @@ def rent_bike(station_id, bike_id, user):
             bike.rental = r
             bike.save()
         return ("success", "bike rented successfully")
-    except:
-        return ("error", "something went wrong, try again")
+    # except:
+    #     return ("error", "something went wrong, try again")
 
 from math import ceil
 def rental_charge(duration):
@@ -77,21 +77,26 @@ def return_bike(rental_id, station_id):
             Bike.objects.select_for_update()
             BikeUser.objects.select_for_update()
             rental = Rental.objects.get(pk=rental_id)
+            if rental.end_station is not None or rental.end_date is not None:
+                ("error", "Bike already returned.")
             end_station = Station.objects.get(pk=station_id)
             rental.bike.station = end_station
             rental.bike.rental_id = None
             rental.end_station = end_station
             rental.end_date = datetime.now()
             charge = rental_charge(rental.end_date - rental.start_date)
+            rental.cost = charge
             rental.user.balance -= charge
             rental.user.save()
             rental.save()
             rental.bike.save()
-        return ("success", "bike returned successfully")
+            return ("success", "Bike returned successfully. Charged user %d for the renal." % charge)
     except:
-        return ("error", "something went wrong, try again")
+        return ("error", "Something went wrong, try again.")
 
 def station_detail(request, station_id):
+    if not request.user.is_authenticated():
+        return redirect('bikes:index')
     if request.method == 'POST':
         s = get_object_or_404(Bike, pk=request.POST['b_id'])
         out = rent_bike(station_id, request.POST['b_id'], request.user.user)
@@ -100,6 +105,8 @@ def station_detail(request, station_id):
     return render(request, 'bikes/station_detail.html', context = {'station':s, 'bikes':s.bike_set.all().filter(rental__isnull=True).filter(working=True)})
 
 def stations(request):
+    if not request.user.is_authenticated():
+        return redirect('bikes:index')
     if request.method == 'POST':
         print request.POST
         # print
@@ -121,16 +128,53 @@ def stations(request):
 
 def details(request):
     if not request.user.is_authenticated():
-        redirect('bikes:index')
-    return render(request, 'bikes/details.html')
+        return redirect('bikes:index')
+    rentals = request.user.user.rental_set.all().order_by('-end_date')[:5]
+    if request.method == 'POST':
+        print request.POST
+        if "show_all_rentals" in request.POST:
+            rentals = request.user.user.rental_set.all().order_by('-end_date')
+        if "account_details_save" in request.POST:
+            try:
+                with transaction.atomic():
+                    BikeUser.objects.select_for_update()
+                    if request.POST['name'] != '':
+                        request.user.user.name = request.POST['name']
+                    if request.POST['surname'] != '':
+                        request.user.user.surname = request.POST['surname']
+                    if request.POST['name'] != '':
+                        request.user.user.address = request.POST['address']
+            except:
+                pass
+        if "change_password" in request.POST:
+            if request.POST['new_password'] != request.POST['new_password2']:
+                return render(request, 'bikes/details.html', {'rentals':rentals,'alerts':[('error', 'Passwords don\'t match.')]})
+            if request.user.check_password(request.POST['old_password']):
+                # try:
+                    user = request.user
+                    with transaction.atomic():
+                        request.user.set_password(request.POST['new_password'])
+                        print 'before save', request.user
+                        print request.user.is_authenticated()
+                        request.user.save()
+                        update_session_auth_hash(request, request.user)
+                    return render(request, 'bikes/details.html', {'rentals':rentals,'alerts':[('success', 'Password changed successfully.')]})
+                # except:
+            else:
+                return render(request, 'bikes/details.html', {'rentals':rentals,'alerts':[('error', 'Wrong password.')]})
+            return render(request, 'bikes/details.html', {'rentals':rentals,'alerts':[('error', 'Something went wrong.')]})
+    return render(request, 'bikes/details.html', {'rentals':rentals})
 
 
 def logout_page(request):
+    if not request.user.is_authenticated():
+        return redirect('bikes:index')
     logout(request)
-    print 'redirected to index'
-    return index(request, alerts = [('success', 'logged out successfully')])
+    return index(request, alerts = [('success', 'Logged out successfully!')])
 
 def login_page(request):
+    if request.user.is_authenticated():
+        return redirect('bikes:index')
     print BikeUser.objects.all()
     if request.method == 'POST':
         if 'login_request' in request.POST:
@@ -143,12 +187,19 @@ def login_page(request):
     return render(request, 'bikes/login.html')
 
 def register(request):
+    if request.user.is_authenticated():
+        return redirect('bikes:index')
     if request.method == 'POST':
         print request.POST
         if 'register_request' in request.POST:
+            try:
+                User.objects.get(username='bikes_'+request.POST['login'])
+                return render(request, 'bikes/register.html', context={'alerts':[('error', 'Username already taken')]})
+            except:
+                pass
             if request.POST['password'] != request.POST['password2']:
                 print "passwords don't match"
-                return redirect('bikes:register')
+                return render(request, 'bikes/register.html', context={'alerts':[('error', 'Passwords don\'t match')]})
             try:
                 with transaction.atomic():
                     user = User(username='bikes_'+request.POST['login'])
@@ -160,15 +211,49 @@ def register(request):
                                        name=request.POST['name'],
                                        surname=request.POST['surname'])
                     bikeuser.save()
-                    return redirect('bikes:index')
+                    return index(request, alerts=[('success', 'User created successfully. You can log into your new account!')])
             except:
                 return redirect('bikes:register')
     return render(request, 'bikes/register.html')
 
 def top_up(request):
+    if not request.user.is_authenticated():
+        return redirect('bikes:index')
     if request.method == 'POST':
-        with transaction.atomic():
-            BikeUser.objects.select_for_update()
-            request.user.user.balance += int(request.POST['amount'])
-            request.user.user.save()
+        try:
+            print request.user.is_superuser
+            if not request.user.is_superuser:
+                return render(request, 'bikes/top_up.html', context={'alerts':[('error', 'You don\'t have permission to do it, sorry.')]})
+            if int(request.POST['amount']) < 0:
+                return render(request, 'bikes/top_up.html', context={'alerts':[('error', 'Negative amount.')]})
+            with transaction.atomic():
+                BikeUser.objects.select_for_update()
+                request.user.user.balance += int(request.POST['amount'])
+                request.user.user.save()
+        except:
+            return render(request, 'bikes/top_up.html', context={'alerts':[("error", "something went wrong, try again")]})
     return render(request, 'bikes/top_up.html')
+
+def rental_detail(request, rental_id):
+    if not request.user.is_authenticated():
+        return redirect('bikes:index')
+    rentals = request.user.user.rental_set.all().order_by('-end_date')[:5]
+    try:
+        rental = Rental.objects.get(pk=rental_id)
+        if request.user.user != rental.user:
+            return render(request, 'bikes/index.html', {'rentals':rentals, 'alerts':[('error', 'You cannot see this rental, sorry.')], 'rentals':request.user.user.rental_set.all().filter(end_station__isnull=True)})
+        return render(request, 'bikes/rental_detail.html', {'rental':rental})
+    except:
+        return render(request, 'bikes/index.html', {'rentals':rentals, 'alerts':[('error', 'Something went wrong, sorry.')], 'rentals':request.user.user.rental_set.all().filter(end_station__isnull=True)})
+
+def faq(request):
+    # print dir(request)
+    print request.get_raw_uri()
+    if request.user.is_authenticated():
+        return redirect('bikes:index')
+    return render(request, 'bikes/lorem.html')
+
+def terms(request):
+    if request.user.is_authenticated():
+        return redirect('bikes:index')
+    return render(request, 'bikes/lorem.html')

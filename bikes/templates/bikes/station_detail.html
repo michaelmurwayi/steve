@@ -1,14 +1,28 @@
 {% extends 'bikes/base.html' %}
 {% load staticfiles %}
 {% block content %}
-      Bikes on station {{ station.address }}:<br/>
-      <form action="." method="post">
+<div class="row">
+  <div class="col-lg-12 text-center">
+    <h1>{{ station.address }}</h1>
+    {% if bikes %}
+    <p class="lead">Choose a bike to rent</p>
+    <form action="." method="post">
+      <div class="form-group">
+
         {% csrf_token %}
         <select class="form-control" name="b_id">
           {% for bike in bikes %}
-              <option value={{bike.id}}><li>{{bike.id}}</li></option>
+          <option value={{bike.id}}><li>{{bike.id}}</li></option>
           {% endfor %}]
         </select>
+      </div>
+      <div class="form-group">
         <input class="btn btn-default" type="submit" name="rent_bike" value="Rent"/>
-      </form>
+      </div>
+    </form>
+    {% else %}
+    <p class="lead">No bikes available on the station, sorry.</p>
+    {% endif %}
+  </div>
+</div>
 {% endblock %}

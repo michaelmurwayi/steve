@@ -6,7 +6,7 @@ The following app is supposed to be a clone of NextBike rental app. It allows us
 
 ## How to use
 
-* setup postgres database
+* setup postgres
 * `./manage.py ip:port` to launch the server
 
 ## Dependencies

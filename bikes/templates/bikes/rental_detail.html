@@ -1,0 +1,41 @@
+{% extends 'bikes/base.html' %}
+{% load staticfiles %}
+{% block content %}
+{# Details page#}
+<div class="col-xs-12 col-lg-10 col-lg-offset-4">
+<table class="table-responsive col-xs-12 col-lg-6">
+  <tr>
+    <td class="col-xs-2 text-right"><p class="lead">Start station:</p></td>
+    <td class="col-xs-10 col-lg-6 text-left"><p class="lead">{{ rental.start_station }}</p></td>
+  </tr>
+  <tr>
+    <td class="col-xs-2 text-right"><p class="lead">Start date:</p></td>
+    <td class="col-xs-10 col-lg-6 text-left"><p class="lead">{{ rental.start_date }}</p></td>
+  </tr>
+  <tr>
+    <td class="col-xs-2 text-right"><p class="lead">End station:</p></td>
+    {% if rental.end_station %}
+    <td class="col-xs-10 col-lg-6 text-left"><p class="lead">{{ rental.end_station }}</p></td>
+    {% else %}
+    <td class="col-xs-10 col-lg-6 text-left"><p class="lead">Bike still rented</p></td>
+    {% endif %}
+  </tr>
+  <tr>
+    <td class="col-xs-2 text-right"><p class="lead">End date:</p></td>
+    {% if rental.end_date %}
+    <td class="col-xs-10 col-lg-6 text-left"><p class="lead">{{ rental.end_date }}</p></td>
+    {% else %}
+    <td class="col-xs-10 col-lg-6 text-left"><p class="lead">Bike still rented</p></td>
+    {% endif %}
+  </tr>
+  <tr>
+    <td class="col-xs-2 text-right"><p class="lead">Cost:</p></td>
+    {% if rental.cost %}
+    <td class="col-xs-10 col-lg-6 text-left"><p class="lead">{{ rental.cost }}</p></td>
+    {% else %}
+    <td class="col-xs-10 col-lg-6 text-left"><p class="lead">Bike still rented</p></td>
+    {% endif %}
+  </tr>
+</div>
+
+{% endblock %}
