@@ -19,7 +19,7 @@ from django.contrib import admin
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 import datetime
-from settings import *
+# from settings import *
 
 def current_datetime(request):
     now = datetime.datetime.now()

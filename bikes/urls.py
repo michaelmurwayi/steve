@@ -6,6 +6,7 @@ app_name = 'bikes'
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
+    url(r'^profile/', views.profile, name='profile'),
     url(r'^station/(?P<station_id>[0-9]+)/$', views.station_detail, name='station_detail'),
     url(r'^rental/(?P<rental_id>[0-9]+)/$', views.rental_detail, name='rental_detail'),
     url(r'^details$', views.details, name='details'),

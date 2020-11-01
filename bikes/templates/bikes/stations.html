@@ -1,9 +1,9 @@
 {% extends 'bikes/base.html' %}
-{% load staticfiles %}
+{% load static %}
 {% block content %}
 <div class="row">
   <div class="col-lg-12 text-center">
-    <h1>Stations</h1>
+    <h1>Carwash Stations</h1>
     {% if 'bike_return' in request.POST %}
       <p class="lead">Choose a return station</p>
     {% else %}
@@ -25,7 +25,7 @@
   <input type="hidden" value="{{ rental_id }}" name="rental_id"/>
   <input class="btn btn-default" type="submit" name="return_station" value="Return"/>
   {% else %}
-  <input class="btn btn-default" type="submit" name="station_select" value="Show bikes"/>
+  <input class="btn btn-warning" type="submit" name="station_select" value="Show Slots"/>
   {% endif %}
 </form>
 

@@ -27,7 +27,7 @@ SECRET_KEY = '@n=_3ob%fx&c)2k)1ob-nab&z=1p4gr6r1wm#$0@g)#x1j)pt6'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '10.0.0.8']
+ALLOWED_HOSTS = ['localhost', '10.0.0.8', '127.0.0.1']
 
 
 # Application definition
@@ -52,6 +52,12 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+MIDDLEWARE = [
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
 ]
 
 ROOT_URLCONF = 'rowerki.urls'
@@ -80,12 +86,12 @@ WSGI_APPLICATION = 'rowerki.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'rowerki',
-        'USER': 'gabor',
-        'PASSWORD': '',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'bikes',
+        'USER': 'huncho',
+        'PASSWORD': 'c11h28no3',
         'HOST': 'localhost',
-        'PORT': '',
+        'PORT': '3306',
     }
 }
 
@@ -128,7 +134,3 @@ USE_TZ = False
 
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-    # '/var/www/static/',
-]

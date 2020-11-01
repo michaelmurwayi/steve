@@ -1,7 +1,7 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.http import Http404
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
 
@@ -44,9 +44,9 @@ class ResultsView(generic.DetailView):
 from time import sleep
 
 def vote(request, question_id):
-    print Question, dir(Question), '\n\n\n\n'
+    print(Question, dir(Question), '\n\n\n\n')
     question = get_object_or_404(Question, pk=question_id)
-    print request.POST.getlist('choice[]')
+    print(request.POST.getlist('choice[]'))
 
     try:
         if not len(request.POST.getlist('choice[]')):
@@ -55,7 +55,7 @@ def vote(request, question_id):
                 'error_message': "You didn't select a choice.",
             })
         else:
-            print question.choice_set.filter(pk__in=request.POST.getlist('choice[]'))
+            print(question.choice_set.filter(pk__in=request.POST.getlist('choice[]')))
             question.choice_set.filter(pk__in=request.POST.getlist('choice[]')).update(votes=F('votes')+1)
             # sleep(3)
             return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))

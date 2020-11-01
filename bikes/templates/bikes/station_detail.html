@@ -1,11 +1,11 @@
 {% extends 'bikes/base.html' %}
-{% load staticfiles %}
+{% load static %}
 {% block content %}
 <div class="row">
   <div class="col-lg-12 text-center">
     <h1>{{ station.address }}</h1>
     {% if bikes %}
-    <p class="lead">Choose a bike to rent</p>
+    <p class="lead">Choose a service to rent</p>
     <form action="." method="post">
       <div class="form-group">
 
@@ -21,7 +21,7 @@
       </div>
     </form>
     {% else %}
-    <p class="lead">No bikes available on the station, sorry.</p>
+    <p class="lead">No Slot available on the station, sorry.</p>
     {% endif %}
   </div>
 </div>
