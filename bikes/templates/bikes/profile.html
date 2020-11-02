@@ -1,0 +1,215 @@
+{% extends 'bikes/base.html' %}
+{% load static %}
+{% block content %}
+  {% if request.user.is_authenticated %}
+  <div class="row">
+    <div class="text-center">
+    {% if rentals %}
+      <h1>Currently rented Services:</h1>
+      <!-- <p class="lead">Remember to return them!</p> -->
+      <table class="table-responsive">
+        <tr>
+          <th>Slot number</th>
+          <th>Start station</th>
+          <th>Rental start</th>
+          <th class="col-xs-1"></th>
+        </tr>
+        {% for rental in rentals %}
+          <tr>
+            <td>{{ rental.bike.id }}</td>
+            <td>{{ rental.start_station.address }}</td>
+            <td>{{ rental.start_date }}</td>
+            <td class="col-xs-1">
+              <form action="{% url 'bikes:stations' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name='rental_id' value="{{ rental.id }}"></input>
+                <button class="btn btn-default" type="submit" name="bike_return">Cancel Booing</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </table>
+    {% else %}
+      {% if request.user.user.in_debt %}
+        <h1>You are broke, you balance is {{request.user.user.balance}}.</h1>
+        <p class="lead">Top-up account before rental.</p>
+      {% else %}
+        <h1>No Services Booked Today.</h1>
+        <p class="lead">Go ahead and rent something!</p>
+      {% endif %}
+    {% endif %}
+    </div>
+  </div>
+  {% else %}
+  <div class="row">
+    <div class="col-lg-12 text-center">
+      <h1>Wash Me</h1>
+      <p class="lead"> User not logged in. </p>
+    </div>
+  </div>
+  {% endif %}
+     <!--Grid row-->
+     <div class="row wow fadeIn mt-5">
+
+      <!--Grid column-->
+      <div class="col-md-6 mb-4">
+
+        <!--Card-->
+        <div class="card">
+
+          <!--Card content-->
+          <div class="card-body">
+
+            <!-- Table  -->
+            <table class="table table-hover">
+              <!-- Table head -->
+              <thead class="blue-grey lighten-4">
+                <h2>Full Car Wash Service </h2>
+                This Service Includes :
+              </thead>
+              <!-- Table head -->
+
+              <!-- Table body -->
+              <tbody>
+                <tr>
+                  <th>Full exterior body wash</th>
+                  <th>Full interior cleaning</th>
+                  <th>Engine Cleaning</th>
+                  <th>Seat cleaning </th>
+                </tr>
+                <tr>
+                  <button class="btn btn-primary"><a href="{% url 'bikes:stations' %}">Book Service</a></button>
+                </tr>
+              </tbody>
+              <!-- Table body -->
+            </table>
+            <!-- Table  -->
+
+          </div>
+
+        </div>
+        <!--/.Card-->
+
+      </div>
+      <!--Grid column-->
+
+
+      <!--Grid column-->
+      <div class="col-md-6 mb-4">
+
+        <!--Card-->
+        <div class="card">
+
+          <!--Card content-->
+          <div class="card-body">
+
+            <!-- Table  -->
+            <table class="table table-hover">
+              <!-- Table head -->
+              <thead class="blue-grey lighten-4">
+                <h2>Exterior Body Wash Service </h2>
+                This Service Includes :
+              </thead>
+              <!-- Table head -->
+
+              <!-- Table body -->
+              <tbody>
+                <tr>
+                  <th> body wash</th>
+                  <th>Tire cleaning</th>
+                  <th>Window Cleaning</th>
+
+                </tr>
+                <tr>
+                  <button class="btn btn-primary"><a href="{% url 'bikes:stations' %}">Book Service</a></button>
+                </tr>
+              </tbody>
+              <!-- Table body -->
+            </table>
+            <!-- Table  -->
+
+          </div>
+
+        </div>
+        <!--/.Card-->
+
+      </div>
+      <!--/.Card-->
+
+      <!--Grid column-->
+
+      <!--Grid column-->
+      <div class="col-md-6 mb-4">
+
+        <!--Card-->
+        <div class="card">
+
+          <!--Card content-->
+          <div class="card-body">
+
+            <!-- Table  -->
+            <table class="table table-hover">
+              <!-- Table head -->
+              <thead class="blue-grey lighten-4">
+                <h2>Interior Cleaning Service </h2>
+                This Service Includes :
+              </thead>
+              <!-- Table head -->
+
+              <!-- Table body -->
+              <tbody>
+                <tr>
+                  <th>Seat Cleaning </th>
+                  <th>Mat cleaning</th>
+                  <th>Dashboard Waxing</th>
+                  <th>Window Cleaning</th>
+                </tr>
+                <tr>
+                  <button class="btn btn-primary"><a href="{% url 'bikes:stations' %}">Book Service</a></button>
+                </tr>
+              </tbody>
+                 <!-- Table head -->
+              </tbody>
+              <!-- Table body -->
+              <tbody>
+               
+              <!-- Table body -->
+            </table>
+            <!-- Table  -->
+
+          </div>
+
+        </div>
+        <!--/.Card-->
+
+      </div>
+      </div>
+  <div class="row wow fadeIn">
+
+    <!--Grid column-->
+    <div class="col-md-12 mb-4">
+
+      <!--Card-->
+      <div class="card">
+
+        <!-- Card header -->
+        <div class="card-header">Google map</div>
+
+        <!--Card content-->
+        <div class="card-body">
+          <!--Google map-->
+          <div id="map-container-google-2" class="z-depth-1-half map-container" style="height: 500px">
+            <iframe src="https://maps.google.com/maps?q=chicago&t=&z=13&ie=UTF8&iwloc=&output=embed" frameborder="0"
+              style="border:0" allowfullscreen></iframe>
+          </div>
+
+          <!--Google Maps-->
+
+        </div>
+
+      </div>
+      <!--/.Card-->
+
+{% endblock %}
+  <!-- Google Maps -->
+  <script src="https://maps.google.com/maps/api/js"></script>

@@ -83,7 +83,7 @@ def return_bike(rental_id, station_id):
             BikeUser.objects.select_for_update()
             rental = Rental.objects.get(pk=rental_id)
             if rental.end_station is not None or rental.end_date is not None:
-                ("error", "Bike already returned.")
+                ("error", "Service already Canceled.")
             end_station = Station.objects.get(pk=station_id)
             rental.bike.station = end_station
             rental.bike.rental_id = None
@@ -95,7 +95,7 @@ def return_bike(rental_id, station_id):
             rental.user.save()
             rental.save()
             rental.bike.save()
-            return ("success", "Bike returned successfully. Charged user %d for the renal." % charge)
+            return ("success", "Service Deliverd successfully. Charged user %d for the renal." % charge)
     except:
         return ("error", "Something went wrong, try again.")
 

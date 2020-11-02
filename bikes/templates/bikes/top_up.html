@@ -1,5 +1,5 @@
 {% extends 'bikes/base.html' %}
-{% load staticfiles %}
+{% load static %}
 {% block content %}
 <form action="{% url 'bikes:top_up' %}" method="post">
   {% csrf_token %}
